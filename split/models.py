@@ -24,12 +24,12 @@ class User(AbstractUser):
         balances = []
         for other_user in User.objects.exclude(id=self.id):
             # Calculate the user's balance with each other user
-            user_balance = {
-                'user_id': other_user.id,
-                'balance': self.calculate_balance_with_user(other_user),
-            }
-            balances.append(user_balance)
+            diff = self.calculate_balance_with_user(other_user)
+            if diff<0:
 
+                balances.append(f"{self.username} owes {other_user.username} : {-diff}")
+            elif diff>0:
+                balances.append(f"{other_user.username} owes {self.username} : {diff}")
         return balances
 
     def calculate_balance_with_user(self, other_user):

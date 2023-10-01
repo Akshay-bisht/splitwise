@@ -21,7 +21,7 @@ class ExpenseShareSerializer(serializers.ModelSerializer):
     
 class UserBalancesSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
-    balances = serializers.ListField(child=serializers.DictField())
+    balances = serializers.ListField()
 
 
 class UserPassbookSerializer(serializers.ModelSerializer):

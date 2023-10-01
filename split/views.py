@@ -58,7 +58,7 @@ class ExpenseListView(APIView):
                             serializerex.save()
                         else:
                             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                    return Response("ok")
+                    return Response({"message": "Expense Distributed equally"}, status=status.HTTP_201_CREATED)
                 elif data['expense_type']=="EXACT":
                     amount_sum = 0
                     for i in data['selected_user']:
@@ -75,7 +75,7 @@ class ExpenseListView(APIView):
                             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     if amount_sum !=data["amount"]:
                         raise AmountSumMismatchError(" total sum of shares is not equal to the total amount")
-                    return Response("ko")
+                    return Response({"message": "Expense distributed exactly"}, status=status.HTTP_201_CREATED)
                 elif data['expense_type']=='PERCENT':
                     percent_sum = 0
                     for i in data['selected_user']:
@@ -92,7 +92,9 @@ class ExpenseListView(APIView):
                             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     if percent_sum !=100:
                         raise AmountSumMismatchError(" total sum of percent is not equal to the 100")
-                    return Response("ko")
+                    return Response({"message": "Expense distributed percent wise"}, status=status.HTTP_201_CREATED)
+                else:
+                    raise AmountSumMismatchError("select type from anyone of this EQUAL, EXACT,PERCENT")
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -103,7 +105,7 @@ class UserBalacesView(APIView):
     def get(self,request):
         balances = request.user.calculate_balances()
         serializer = self.serializer_class({"user_id": request.user.id, "balances": balances})
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UserPassbookView(generics.ListAPIView):
     queryset = Expense.objects.all()
